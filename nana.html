@@ -3,93 +3,300 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나만의 찰떡 스타일 찾기! 🔍</title>
+    <title>My Signature Look 🔍</title>
     <style>
-        body { font-family: 'Pretendard', sans-serif; background-color: #f7f9f9; color: #333; line-height: 1.6; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        h1 { font-size: 24px; text-align: center; color: #111; }
-        p.intro { text-align: center; color: #666; margin-bottom: 30px; font-size: 14px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: bold; margin-bottom: 8px; }
-        input[type="text"], input[type="number"], textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        textarea { resize: vertical; height: 100px; }
-        .radio-group label { font-weight: normal; display: block; margin-bottom: 6px; cursor: pointer; }
-        button { width: 100%; padding: 15px; background-color: #222; color: #fff; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; transition: 0.3s; }
-        button:hover { background-color: #444; }
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        
+        :root {
+            --bg-color: #F9F8F6; 
+            --point-color: #8A7E74; 
+            --text-color: #333333;
+            --border-color: #E5E2DE;
+        }
+
+        body { 
+            font-family: 'Pretendard', sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            display: flex; justify-content: center; align-items: center; 
+            min-height: 100vh; margin: 0;
+        }
+
+        .form-container { 
+            background: #ffffff; width: 100%; max-width: 480px; 
+            padding: 40px; border-radius: 16px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03); 
+            min-height: 400px; display: flex; flex-direction: column;
+        }
+
+        .step { display: none; animation: fadeIn 0.4s ease-in-out; flex-grow: 1; }
+        .step.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 { font-size: 22px; font-weight: 600; margin-bottom: 8px; line-height: 1.4; }
+        p.desc { font-size: 14px; color: #888; margin-bottom: 24px; }
+        
+        /* 표지 전용 스타일 */
+        .cover-wrapper { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
+        .cover-img { width: 100%; max-width: 320px; border-radius: 12px; margin: 20px 0; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .cover-title { font-size: 26px; color: var(--point-color); line-height: 1.3; margin-bottom: 10px; }
+
+        input[type="text"], textarea, select { 
+            width: 100%; padding: 14px; border: 1px solid var(--border-color); 
+            border-radius: 8px; box-sizing: border-box; font-size: 15px; 
+            margin-bottom: 16px; background-color: #FCFBFA; transition: 0.3s;
+            font-family: 'Pretendard', sans-serif;
+        }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--point-color); background-color: #fff; }
+        textarea { height: 100px; resize: none; }
+        select { cursor: pointer; color: #333; }
+
+        .option-label {
+            display: block; padding: 16px; border: 1px solid var(--border-color);
+            border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: 0.2s;
+            background-color: #fff; font-size: 15px; line-height: 1.4;
+        }
+        .option-label:hover { background-color: #F9F8F6; }
+        input[type="radio"], input[type="checkbox"] { display: none; } 
+        input[type="radio"]:checked + .option-label,
+        input[type="checkbox"]:checked + .option-label {
+            border-color: var(--point-color); background-color: #FAF8F6;
+            font-weight: 600; color: var(--point-color);
+        }
+
+        .btn-group { display: flex; justify-content: space-between; margin-top: 30px; gap: 10px; }
+        button { 
+            padding: 14px 24px; border: none; border-radius: 8px; 
+            font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.3s; flex: 1;
+        }
+        .btn-prev { background-color: #F0EFEB; color: #666; }
+        .btn-prev:hover { background-color: #E5E2DE; }
+        .btn-next, .btn-submit, .btn-start { background-color: var(--point-color); color: #fff; }
+        .btn-next:hover, .btn-submit:hover, .btn-start:hover { opacity: 0.9; }
+        .btn-start { width: 100%; font-size: 16px; padding: 16px; margin-top: 10px; }
+        
+        .progress-bar-container { display: none; } /* 처음엔 숨김 */
+        .progress-bar { height: 4px; background: #E5E2DE; border-radius: 2px; margin-bottom: 30px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--point-color); width: 0%; transition: width 0.4s ease; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>나만의 찰떡 스타일 찾기! 🔍</h1>
-    <p class="intro">1:1 퍼스널 스타일링 코칭 사전 질문지입니다.</p>
+<div class="form-container">
+    <div class="progress-bar-container" id="progressContainer">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
 
     <form id="stylingForm">
-        <div class="form-group">
-            <label>이름</label>
-            <input type="text" name="name" required placeholder="홍길동">
-        </div>
-
-        <div class="form-group">
-            <label>나이</label>
-            <input type="number" name="age" required placeholder="21">
-        </div>
-
-        <div class="form-group">
-            <label>학교 및 전공</label>
-            <input type="text" name="major" required placeholder="OO대학교 패션디자인과">
-        </div>
-
-        <div class="form-group">
-            <label>1. 평소 옷을 고를 때 선호하는 핏/소재는?</label>
-            <div class="radio-group">
-                <label><input type="radio" name="fit" value="어깨나 허리선을 깔끔하게 잡아주는 옷 (우븐 등)" required> 어깨나 허리선을 깔끔하게 잡아주는 옷</label>
-                <label><input type="radio" name="fit" value="몸에 자연스럽게 감기는 편안한 옷 (다이마루/니트 등)"> 몸에 자연스럽게 감기는 편안한 옷</label>
-                <label><input type="radio" name="fit" value="잘 모르겠음 (추천 희망)"> 잘 모르겠어요. 이번 기회에 알고 싶어요!</label>
+        
+        <!-- 0페이지: 인트로 표지 -->
+        <div class="step active">
+            <div class="cover-wrapper">
+                <h1 class="cover-title">나만의 찰떡 스타일 찾기<br>'Tabletop Styling'</h1>
+                <img src="IMG_6735 2.JPG" alt="커버 이미지" class="cover-img">
+                <p class="desc">1:1 퍼스널 스타일링 코칭 사전 질문지입니다.</p>
+                <button type="button" class="btn-start" onclick="nextStep(1)">시작하기</button>
             </div>
         </div>
 
-        <div class="form-group">
-            <label>2. 추구하는 스타일 무드는?</label>
-            <div class="radio-group">
-                <label><input type="radio" name="mood" value="러블리/페미닌" required> 러블리 & 페미닌 (시눈, 로즈프란츠 느낌)</label>
-                <label><input type="radio" name="mood" value="미니멀/꾸안꾸"> 미니멀 & 꾸안꾸 (엘본 느낌)</label>
-                <label><input type="radio" name="mood" value="스트릿/캐주얼"> 스트릿 & 캐주얼</label>
-                <label><input type="radio" name="mood" value="모름"> 아직 잘 모르겠어요</label>
+        <!-- 1페이지: 핏/소재 선호도 -->
+        <div class="step">
+            <h2>어떤 핏과 소재를 선호하시나요?</h2>
+            <p class="desc">평소 옷을 입을 때 가장 편안하게 느끼는 실루엣을 골라주세요.</p>
+            
+            <input type="radio" name="fit" id="fit1" value="어깨나 허리선을 깔끔하게 잡아주는 옷">
+            <label class="option-label" for="fit1">어깨나 허리선을 깔끔하게 잡아주는 옷 (우븐 등)</label>
+            
+            <input type="radio" name="fit" id="fit2" value="몸에 자연스럽게 감기는 편안한 옷">
+            <label class="option-label" for="fit2">몸에 자연스럽게 감기는 편안한 옷 (다이마루/니트 등)</label>
+            
+            <input type="radio" name="fit" id="fit3" value="잘 모르겠음">
+            <label class="option-label" for="fit3">잘 모르겠어요. 이번 기회에 알고 싶어요!</label>
+
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="nextStep(-1)">이전</button>
+                <button type="button" class="btn-next" onclick="nextStep(1)">다음으로</button>
             </div>
         </div>
 
-        <div class="form-group">
-            <label>3. 내 옷장 털기 (처치 곤란템 설명)</label>
-            <textarea name="wardrobe_desc" placeholder="예: 트렌드라 해서 샀는데 매치가 어려운 민트색 바지, 핏이 애매한 체크 셔츠 등 자유롭게 적어주세요!"></textarea>
+        <!-- 2페이지: 무드 선택 -->
+        <div class="step">
+            <h2>추구하는 스타일 무드는 무엇인가요?</h2>
+            <p class="desc">내가 입고 싶은, 혹은 나만의 분위기를 하나 골라주세요.</p>
+            
+            <input type="radio" name="mood" id="mood1" value="러블리/페미닌">
+            <label class="option-label" for="mood1">러블리 & 페미닌 (사랑스럽고 부드러운 느낌)</label>
+            
+            <input type="radio" name="mood" id="mood2" value="미니멀/꾸안꾸">
+            <label class="option-label" for="mood2">미니멀 & 꾸안꾸 (깔끔하고 세련된 도시 느낌)</label>
+            
+            <input type="radio" name="mood" id="mood3" value="스트릿/캐주얼">
+            <label class="option-label" for="mood3">스트릿 & 캐주얼 (편안하고 힙한 느낌)</label>
+
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="nextStep(-1)">이전</button>
+                <button type="button" class="btn-next" onclick="nextStep(1)">다음으로</button>
+            </div>
         </div>
 
-        <button type="submit">제출하고 나만의 무드 찾기</button>
+        <!-- 3페이지: 옷장 고민 (복수선택) -->
+        <div class="step">
+            <h2>현재 내 옷장의 가장 큰 고민은?</h2>
+            <p class="desc">해당되는 것을 모두 골라주세요. (복수 선택 가능)</p>
+            
+            <input type="checkbox" name="worries" id="worry1" value="외출복 부족">
+            <label class="option-label" for="worry1">옷은 많은데 막상 외출할 때 입을 옷이 없다.</label>
+            
+            <input type="checkbox" name="worries" id="worry2" value="교복템 반복">
+            <label class="option-label" for="worry2">맨날 똑같은 옷(교복템)만 돌려 입는다.</label>
+            
+            <input type="checkbox" name="worries" id="worry3" value="매치 어려움">
+            <label class="option-label" for="worry3">상의/하의/신발을 어떻게 코디해야 할지 매치가 어렵다.</label>
+
+            <input type="checkbox" name="worries" id="worry4" value="퍼스널컬러/스타일 모름">
+            <label class="option-label" for="worry4">나에게 어울리는 컬러나 스타일을 전혀 모르겠다.</label>
+
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="nextStep(-1)">이전</button>
+                <button type="button" class="btn-next" onclick="nextStep(1)">다음으로</button>
+            </div>
+        </div>
+
+        <!-- 4페이지: TPO 선택 -->
+        <div class="step">
+            <h2>나만의 스타일을 뽐내고 싶은 상황은?</h2>
+            <p class="desc">코칭 후 완성된 룩을 가장 활용하고 싶은 순간을 골라주세요.</p>
+            
+            <input type="radio" name="tpo" id="tpo1" value="데일리 캠퍼스룩">
+            <label class="option-label" for="tpo1"><b>데일리 캠퍼스룩</b><br>매일 학교 갈 때 나를 기분 좋게 만드는 룩</label>
+            
+            <input type="radio" name="tpo" id="tpo2" value="주말 오프타임룩">
+            <label class="option-label" for="tpo2"><b>주말 오프타임룩</b><br>특별한 약속이나 데이트할 때 입을 룩</label>
+            
+            <input type="radio" name="tpo" id="tpo3" value="프로페셔널룩">
+            <label class="option-label" for="tpo3"><b>프로페셔널룩</b><br>발표, 인턴 면접 등 나를 단정하게 어필할 룩</label>
+
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="nextStep(-1)">이전</button>
+                <button type="button" class="btn-next" onclick="nextStep(1)">다음으로</button>
+            </div>
+        </div>
+
+        <!-- 5페이지: 처치곤란템 -->
+        <div class="step">
+            <h2>내 옷장의 고민을 들려주세요</h2>
+            <p class="desc">처치 곤란인 옷이나 코디가 어려운 아이템을 자유롭게 적어주세요.</p>
+            
+            <textarea name="wardrobe_desc" placeholder="예: 트렌드라 해서 샀는데 매치가 어려운 민트색 바지, 핏이 애매해서 손이 안 가는 체크 셔츠 등"></textarea>
+
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="nextStep(-1)">이전</button>
+                <button type="button" class="btn-next" onclick="nextStep(1)">다음으로</button>
+            </div>
+        </div>
+
+        <!-- 6페이지: 기본 정보 및 일정 (마지막 페이지) -->
+        <div class="step">
+            <h2>마지막으로 정보를 남겨주세요!</h2>
+            <p class="desc">코칭 안내 및 일정 조율을 위해 필요합니다.</p>
+            
+            <input type="text" name="name" required placeholder="이름 (예: 홍길동)">
+            
+            <select name="age" required>
+                <option value="" disabled selected>나이를 선택해주세요</option>
+                <option value="19살">19살</option>
+                <option value="20살">20살</option>
+                <option value="21살">21살</option>
+                <option value="22살">22살</option>
+                <option value="23살">23살</option>
+                <option value="24살">24살</option>
+                <option value="25살">25살</option>
+                <option value="26살 이상">26살 이상</option>
+            </select>
+            
+            <select name="school" required>
+                <option value="" disabled selected>학교를 선택해주세요</option>
+                <option value="충남대">충남대학교</option>
+                <option value="한밭대">한밭대학교</option>
+                <option value="대전대">대전대학교</option>
+                <option value="목원대">목원대학교</option>
+                <option value="한남대">한남대학교</option>
+                <option value="건양대(대전)">건양대학교 (대전캠퍼스)</option>
+                <option value="건양대(논산)">건양대학교 (논산캠퍼스)</option>
+                <option value="대전과기대">대전과학기술대학교</option>
+                <option value="배재대">배재대학교</option>
+            </select>
+
+            <input type="text" name="days" required placeholder="가능한 요일 (예: 월, 수, 금)">
+
+            <select name="time" required>
+                <option value="" disabled selected>선호하는 시간대를 선택해주세요</option>
+                <option value="오전">오전</option>
+                <option value="오후">오후</option>
+                <option value="저녁">저녁</option>
+            </select>
+
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="nextStep(-1)">이전</button>
+                <button type="submit" class="btn-submit">제출하고 결과 기다리기</button>
+            </div>
+        </div>
+
     </form>
 </div>
 
 <script>
-    // 1단계에서 복사한 '웹 앱 URL'을 아래 따옴표 안에 넣으세요!
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxHuBlMSGxHj4NHBEf4f2W9CJVDtO-4bVKNWcKkZMFJvivB7nDX-1I-xDfFSYB8-mp7/exec'; 
-    const form = document.forms['stylingForm'];
+    // ★ 주의: 구글 앱스 스크립트 웹 앱 URL을 반드시 아래에 넣어주세요!
+    const scriptURL = '여기에_복사한_웹앱_URL을_붙여넣으세요'; 
 
+    let currentTab = 0;
+    const steps = document.querySelectorAll('.step');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressFill = document.getElementById('progressFill');
+
+    showTab(currentTab);
+
+    function showTab(n) {
+        steps.forEach(step => step.classList.remove('active'));
+        steps[n].classList.add('active');
+        
+        // 표지(0번째 탭)에서는 프로그레스 바 숨기기
+        if (n === 0) {
+            progressContainer.style.display = 'none';
+        } else {
+            progressContainer.style.display = 'block';
+            // 표지를 제외한 총 6단계 기준 진행률 계산
+            const totalFormSteps = steps.length - 1;
+            const progress = (n / totalFormSteps) * 100;
+            progressFill.style.width = progress + '%';
+        }
+    }
+
+    function nextStep(n) {
+        currentTab += n;
+        showTab(currentTab);
+    }
+
+    const form = document.forms['stylingForm'];
     form.addEventListener('submit', e => {
-        e.preventDefault(); // 기본 제출 새로고침 방지
-        const submitButton = form.querySelector('button');
+        e.preventDefault();
+        const submitButton = document.querySelector('.btn-submit');
         submitButton.textContent = '제출 중...';
         submitButton.disabled = true;
 
         fetch(scriptURL, { method: 'POST', body: new FormData(form)})
             .then(response => {
                 alert('신청이 완료되었습니다! 꼼꼼히 분석해서 연락드릴게요.');
-                form.reset();
-                submitButton.textContent = '제출하고 나만의 무드 찾기';
-                submitButton.disabled = false;
+                location.reload(); 
             })
             .catch(error => {
                 console.error('Error!', error.message);
                 alert('제출에 실패했습니다. 다시 시도해주세요.');
-                submitButton.textContent = '제출하고 나만의 무드 찾기';
+                submitButton.textContent = '제출하고 결과 기다리기';
                 submitButton.disabled = false;
             });
     });
